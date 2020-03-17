@@ -3,6 +3,8 @@ package controller.reqbody;
 public class NoteInsertReqBody {
     private Integer userId;
 
+    private Integer parentId;
+
     private String title;
 
     private String content;
@@ -39,4 +41,12 @@ public class NoteInsertReqBody {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
+    }
+    public Integer getParentId() {
+        return parentId;
+    }
+
 }

@@ -1,10 +1,5 @@
 package service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import service.dto.UserFolderDTO;
-import service.dto.UserDTO;
-import service.dto.UserFileDTO;
 import mapper.OriginFileMapper;
 import mapper.UserFileMapper;
 import mapper.UserFolderMapper;
@@ -13,14 +8,20 @@ import model.OriginFile;
 import model.User;
 import model.UserFile;
 import model.UserFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import service.DiskService;
+import service.dto.UserDTO;
+import service.dto.UserFileDTO;
+import service.dto.UserFolderDTO;
 import util.SortUtil;
 import util.object.DTOConvertUtil;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -201,14 +202,11 @@ public class DiskServiceImpl implements DiskService {
 
     @Override
     public UserDTO shred(List<Integer> folders, List<Integer> files, Integer userId) {
-        // 统计删除的总字节
-        long removedCap = 0L;
 
         // 删除文件
         for (int i = 0; i < files.size(); i++) {
             UserFile localFile = userFileMapper.selectByPrimaryKey(files.get(i));
             OriginFile file = originFileMapper.selectByPrimaryKey(localFile.getFileId());
-            removedCap += file.getFileSize();
             userFileMapper.deleteByPrimaryKey(localFile.getFileId());
         }
 
@@ -221,7 +219,6 @@ public class DiskServiceImpl implements DiskService {
                 List<UserFile> localFileList = userFileMapper.listByParentId(userId, parent);
                 for (UserFile localFile : localFileList) {
                     OriginFile file = originFileMapper.selectByPrimaryKey(localFile.getFileId());
-                    removedCap += file.getFileSize();
                     userFileMapper.deleteByPrimaryKey(localFile.getFileId());
                 }
 
@@ -235,8 +232,19 @@ public class DiskServiceImpl implements DiskService {
 
         // 更新用户已用空间信息
         User user = userMapper.selectByPrimaryKey(userId);
-        user.setUsedSize(user.getUsedSize() - removedCap);
         userMapper.updateByPrimaryKey(user);
         return convertor.convertToDTO(user);
+    }
+
+    @Override
+    public OriginFile getOriginFileByMd5(String fileMd5) {
+        return originFileMapper.getByFileMd5(fileMd5);
+    }
+
+    @Override
+    public boolean isFolderExist(Integer userId, Integer folderId, String FolderName) {
+        List<UserFolder> folder=userFolderMapper.listByParentId(userId,folderId);
+        List<String> nameList=folder.stream().map(UserFolder::getFolderName).collect(Collectors.toList());
+        return nameList.contains(FolderName);
     }
 }

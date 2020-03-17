@@ -1,15 +1,25 @@
 package model;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Note {
     private Integer id;
+
+    private Integer parentId;
 
     private Integer userId;
 
     private String title;
 
     private String content;
+
+    private  Integer imageId;
+
+    private Integer thumb_up;
+
+    private Integer thumb_down;
 
     private Boolean isDelete;
 
@@ -20,10 +30,24 @@ public class Note {
     public Note() {
     }
 
-    public Note(Integer userId, String title, String content) {
+    public Note(Integer userId, Integer parentId, String title, String content) {
         this.userId = userId;
+        this.parentId = parentId;
         this.title = title;
         this.content = content;
+        this.imageId=0;
+        isDelete=false;
+        thumb_up=thumb_down=0;
+    }
+
+    public Note(Integer userId, Integer parentId, String title, String content,int imageId) {
+        this.userId = userId;
+        this.parentId = parentId;
+        this.title = title;
+        this.content = content;
+        this.imageId=imageId;
+        isDelete=false;
+        thumb_up=thumb_down=0;
     }
 
     public Integer getId() {
@@ -32,6 +56,14 @@ public class Note {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
     }
 
     public Integer getUserId() {
@@ -58,6 +90,29 @@ public class Note {
         this.content = content == null ? null : content.trim();
     }
 
+    public Integer getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(Integer imageId) {
+        this.imageId = imageId;
+    }
+
+    public Integer getThumb_up() {
+        return thumb_up;
+    }
+
+    public void setThumb_up(Integer thumb_up) {
+        this.thumb_up = thumb_up;
+    }
+
+    public Integer getThumb_down() {
+        return thumb_down;
+    }
+
+    public void setThumb_down(Integer thumb_down) {
+        this.thumb_down = thumb_down;
+    }
     public Boolean getIsDelete() {
         return isDelete;
     }
@@ -82,16 +137,35 @@ public class Note {
         this.updateTime = updateTime;
     }
 
+    public Map<String, Object> getNote(){
+        Map<String, Object> data = new HashMap<>();
+        data.put("id",id);
+        data.put("parentId",parentId);
+        data.put("userId",userId);
+        data.put("title",title);
+        data.put("content",content);
+        data.put("imageId",imageId);
+        data.put("thumb_up",thumb_up);
+        data.put("thumb_down",thumb_down);
+        data.put("isDelete",isDelete);
+        data.put("createTime",createTime);
+        data.put("updateTime",updateTime);
+        return data;
+    }
+
     @Override
     public String toString() {
         return "Note{" +
                 "id=" + id +
+                ", parentId=" + parentId +
                 ", userId=" + userId +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
+                ", imageId='" + imageId + '\'' +
                 ", isDelete=" + isDelete +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 '}';
     }
+
 }

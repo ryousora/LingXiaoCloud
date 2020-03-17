@@ -17,6 +17,11 @@ public class UserFolderDTO extends Sortable {
 
     private Date deleteTime;
 
+    public UserFolderDTO(){}
+
+    public UserFolderDTO(Integer folderId){
+        this.folderId=folderId;
+    }
     public Integer getFolderId() {
         return folderId;
     }
@@ -72,4 +77,5 @@ public class UserFolderDTO extends Sortable {
     public void setDeleteTime(Date deleteTime) {
         this.deleteTime = deleteTime;
     }
+
 }

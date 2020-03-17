@@ -10,7 +10,7 @@ import java.util.Date;
  * 用户的文件夹信息
  */
 @Entity
-@Table(name = "local_folder")
+@Table(name = "user_folder")
 public class UserFolder implements Serializable {
     private final static long serialVersionUID = 1L;
 
@@ -40,6 +40,12 @@ public class UserFolder implements Serializable {
     private Date deleteTime;
 
     public UserFolder() {
+    }
+
+    public UserFolder(Integer userId, @NotNull Integer parentId, @NotNull @Size(min = 1, max = 100) String folderName) {
+        this.userId = userId;
+        this.parentId = parentId;
+        this.folderName = folderName;
     }
 
     public Integer getFolderId() {

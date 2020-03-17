@@ -34,6 +34,12 @@ public class UserFile implements Serializable {
     @Column(name = "file_status", nullable = false)
     private Byte fileStatus;
 
+    @Column(name = "thumb_up", nullable = false)
+    private Integer thumb_up;
+
+    @Column(name = "thumb_down", nullable = false)
+    private Integer thumb_down;
+
     @Column(name = "create_time", nullable = false)
     private Date createTime;
 
@@ -44,6 +50,19 @@ public class UserFile implements Serializable {
     private Date deleteTime;
 
     public UserFile() {
+        fileStatus=0;
+        thumb_up=0;
+        thumb_down=0;
+    }
+
+    public UserFile(Integer userId, Integer parentId, String fileName, String fileType) {
+        this.userId = userId;
+        this.parentId = parentId;
+        this.fileName = fileName;
+        this.fileType = fileType;
+        fileStatus=0;
+        thumb_up=0;
+        thumb_down=0;
     }
 
     public Integer getFileId() {
@@ -102,6 +121,14 @@ public class UserFile implements Serializable {
         this.fileStatus = fileStatus;
     }
 
+    public Integer getThumb_up() { return thumb_up; }
+
+    public void setThumb_up(Integer thumb_up) { this.thumb_up = thumb_up; }
+
+    public Integer getThumb_down() { return thumb_down; }
+
+    public void setThumb_down(Integer thumb_down) { this.thumb_down = thumb_down; }
+
     public Date getCreateTime() {
         return createTime;
     }
@@ -136,9 +163,12 @@ public class UserFile implements Serializable {
                 ", fileName='" + fileName + '\'' +
                 ", fileType='" + fileType + '\'' +
                 ", fileStatus=" + fileStatus +
+                ", thumb_up=" + thumb_up +
+                ", thumb_down=" + thumb_down +
                 ", createTime=" + createTime +
                 ", modifyTime=" + modifyTime +
                 ", deleteTime=" + deleteTime +
                 '}';
     }
+
 }

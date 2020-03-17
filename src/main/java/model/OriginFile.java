@@ -19,28 +19,21 @@ public class OriginFile implements Serializable {
     @Column(name = "file_md5", unique = true, nullable = false)
     private String fileMd5;
 
-    @Column(name = "file_size", nullable = false)
-    private Long fileSize;
-
     @Column(name = "file_type", nullable = false)
     private String fileType;
 
     @Column(name = "file_url", unique = true, nullable = false)
     private String fileUrl;
 
-    @Column(name = "file_count", nullable = false)
-    private Integer fileCount;
-
-    @Column(name = "file_status", nullable = false)
-    private Byte fileStatus;
-
     @Column(name = "create_time", nullable = false)
     private Date createTime;
 
-    @Column(name = "modify_time", nullable = false)
-    private Date modifyTime;
-
     public OriginFile() {
+    }
+
+    public OriginFile(String fileMd5, String fileType) {
+        this.fileMd5 = fileMd5;
+        this.fileType = fileType;
     }
 
     public Integer getOriginFileId() {
@@ -59,14 +52,6 @@ public class OriginFile implements Serializable {
         this.fileMd5 = fileMd5 == null ? null : fileMd5.trim();
     }
 
-    public Long getFileSize() {
-        return fileSize;
-    }
-
-    public void setFileSize(Long fileSize) {
-        this.fileSize = fileSize;
-    }
-
     public String getFileType() {
         return fileType;
     }
@@ -83,22 +68,6 @@ public class OriginFile implements Serializable {
         this.fileUrl = fileUrl == null ? null : fileUrl.trim();
     }
 
-    public Integer getFileCount() {
-        return fileCount;
-    }
-
-    public void setFileCount(Integer fileCount) {
-        this.fileCount = fileCount;
-    }
-
-    public Byte getFileStatus() {
-        return fileStatus;
-    }
-
-    public void setFileStatus(Byte fileStatus) {
-        this.fileStatus = fileStatus;
-    }
-
     public Date getCreateTime() {
         return createTime;
     }
@@ -107,26 +76,14 @@ public class OriginFile implements Serializable {
         this.createTime = createTime;
     }
 
-    public Date getModifyTime() {
-        return modifyTime;
-    }
-
-    public void setModifyTime(Date modifyTime) {
-        this.modifyTime = modifyTime;
-    }
-
     @Override
     public String toString() {
         return "OriginFile{" +
                 "originFileId=" + originFileId +
                 ", fileMd5='" + fileMd5 + '\'' +
-                ", fileSize=" + fileSize +
                 ", fileType='" + fileType + '\'' +
                 ", fileUrl='" + fileUrl + '\'' +
-                ", fileCount=" + fileCount +
-                ", fileStatus=" + fileStatus +
                 ", createTime=" + createTime +
-                ", modifyTime=" + modifyTime +
                 '}';
     }
 }

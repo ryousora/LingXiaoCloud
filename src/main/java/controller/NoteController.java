@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping
+@RequestMapping("/user")
 public class NoteController {
     public static final Logger logger = LoggerFactory.getLogger(NoteController.class);
 
@@ -28,16 +28,16 @@ public class NoteController {
     /**
      * 保存Note
      */
-    @RequestMapping(value = "/users/{username}/notes/insert", method = RequestMethod.POST)
+    @RequestMapping(value = "/{username}/notes/insert", method = RequestMethod.POST)
     @ResponseBody
     public ResponseResult insertNote(@PathVariable String username,
-                              @RequestBody NoteInsertReqBody body) {
+                                     @RequestBody NoteInsertReqBody body) {
         Integer userId = userService.getUserByUsername(username).getUserId();
-        Note note = new Note(userId, body.getTitle(), body.getContent());
+        Note note = new Note(userId, body.getParentId(), body.getTitle(), body.getContent());
         noteService.insertNote(note);
         Map<String, Object> data = new HashMap<>();
         data.put("id", note.getId());
-        return ResponseResult.builder().code(201).message("笔记创建成功").data(data).build();
+        return new ResponseResult(data,201,"笔记创建成功");
     }
 
     @RequestMapping(value = "/note/{id}")
@@ -48,35 +48,38 @@ public class NoteController {
     /**
      * 获取Note
      */
-    @RequestMapping(value = "/users/{username}/notes/{id}")
+    @RequestMapping(value = "/{username}/notes/{id}",method = RequestMethod.GET)
     @ResponseBody
     public ResponseResult getNote(@PathVariable("id") Integer id) {
         Note note = noteService.getNote(id);
-        return ResponseResult.builder().code(201).message("获取成功").data(note).build();
+        Map<String, Object> data = note.getNote();
+        return new ResponseResult(data,201,"获取成功");
     }
 
     /**
      * 编辑Note
      */
-    @RequestMapping(value = "/users/{username}/notes/{id}/edit", method = RequestMethod.POST)
+    @RequestMapping(value = "/{username}/notes/{id}/edit", method = RequestMethod.POST)
     @ResponseBody
-    public Integer edit(@PathVariable String username,
-                        @PathVariable("id") Integer id,
+    public ResponseResult edit(@PathVariable("id") Integer id,
                         @RequestParam("title") String title, @RequestParam("content") String content) {
-        Integer userId = userService.getUserByUsername(username).getUserId();
-        Note note = new Note(userId, title, content);
-        note.setUserId(id);
-        return noteService.updateNote(note);
+        Note note = noteService.getNote(id);
+        note.setTitle(title);
+        note.setContent(content);
+        noteService.updateNote(note);
+        Map<String, Object> data = new HashMap<>();
+        data.put("id",id);
+        return  new ResponseResult(data,201,"修改成功");
     }
 
     /**
      * 获取用户的所有Note
      */
-    @RequestMapping(value = "/users/{username}/notes")
+    @RequestMapping(value = "/{username}/notes",method = RequestMethod.GET)
     @ResponseBody
-    public ResponseResult getNoteList(@PathVariable String username) {
+    public ResponseResult<List<Note>> getNoteList(@PathVariable String username) {
         Integer userId = userService.getUserByUsername(username).getUserId();
         List<Note> notes = noteService.listNote(userId);
-        return ResponseResult.builder().code(201).message("获取成功").data(notes).build();
-    }
+        return new ResponseResult<>(notes,201,"获取成功");
+}
 }

@@ -6,13 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="BitsCloudDisk" />
+        <module name="LingXiaoCloud" />
         <module name="BitsNetDisk" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="BitsCloudDisk" target="1.8" />
       <module name="BitsNetDisk" target="1.8" />
+      <module name="LingXiaoCloud" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

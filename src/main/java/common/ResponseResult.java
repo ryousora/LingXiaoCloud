@@ -1,43 +1,68 @@
 package common;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
-
 import java.io.Serializable;
+import java.util.Map;
 
-/**
- * 返回给前台的 Json 数据
- */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ResponseResult<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
      * 返回结果码
-     * 0 成功，非 0 失败
      */
-    @NonNull
-    private Integer code;
+    private int status;
     /**
      * 操作结果信息
      */
-    @NonNull
     private String message;
     /**
      * 返回的数据
      */
-    private T data;
+    private Map<String, Object> data;
 
-    public Integer getCode() {
-        return code;
+    private T data2;
+
+    public ResponseResult() {
     }
 
-    public void setCode(Integer code) {
-        this.code = code;
+    public ResponseResult(int status, String message) {
+        this.status = status;
+        this.message = message;
+    }
+
+    public ResponseResult(Map<String, Object> data, int status, String message) {
+        this.data = data;
+        this.status = status;
+        this.message = message;
+    }
+
+    public ResponseResult(T data2, int status, String message) {
+        this.data2 = data2;
+        this.status = status;
+        this.message = message;
+    }
+
+    public Map<String, Object> getData() {
+        return data;
+    }
+
+    public void setData(Map<String, Object> data) {
+        this.data = data;
+    }
+
+    public T getData2() {
+        return data2;
+    }
+
+    public void setData2(Map<String, Object> data2) {
+        this.data2 = (T) data2;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int code) {
+        this.status = code;
     }
 
     public String getMessage() {
@@ -48,18 +73,10 @@ public class ResponseResult<T> implements Serializable {
         this.message = message;
     }
 
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
-    }
-
     @Override
     public String toString() {
         return "ResponseResult{" +
-                "code=" + code +
+                "status=" + status +
                 ", message='" + message + '\'' +
                 ", data=" + data +
                 '}';

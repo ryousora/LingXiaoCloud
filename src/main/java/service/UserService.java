@@ -1,7 +1,7 @@
 package service;
 
-import service.dto.UserDTO;
 import model.User;
+import service.dto.UserDTO;
 
 public interface UserService {
     int insertUser(User user);

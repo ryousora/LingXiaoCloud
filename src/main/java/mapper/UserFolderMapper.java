@@ -1,29 +1,18 @@
 package mapper;
 
 import model.UserFolder;
-import model.UserFolderExample;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 public interface UserFolderMapper {
-    int countByExample(UserFolderExample example);
-
-    int deleteByExample(UserFolderExample example);
-
     int deleteByPrimaryKey(Integer folderId);
 
     int insert(UserFolder record);
 
     int insertSelective(UserFolder record);
 
-    List<UserFolder> selectByExample(UserFolderExample example);
-
     UserFolder selectByPrimaryKey(Integer folderId);
-
-    int updateByExampleSelective(@Param("record") UserFolder record, @Param("example") UserFolderExample example);
-
-    int updateByExample(@Param("record") UserFolder record, @Param("example") UserFolderExample example);
 
     int updateByPrimaryKeySelective(UserFolder record);
 

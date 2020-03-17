@@ -10,83 +10,9 @@
         <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
         <result column="delete_time" property="deleteTime" jdbcType="TIMESTAMP"/>
     </resultMap>
-    <sql id="Example_Where_Clause">
-        <where>
-            <foreach collection="oredCriteria" item="criteria" separator="or">
-                <if test="criteria.valid">
-                    <trim prefix="(" suffix=")" prefixOverrides="and">
-                        <foreach collection="criteria.criteria" item="criterion">
-                            <choose>
-                                <when test="criterion.noValue">
-                                    and ${criterion.condition}
-                                </when>
-                                <when test="criterion.singleValue">
-                                    and ${criterion.condition} #{criterion.value}
-                                </when>
-                                <when test="criterion.betweenValue">
-                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
-                                </when>
-                                <when test="criterion.listValue">
-                                    and ${criterion.condition}
-                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
-                                             separator=",">
-                                        #{listItem}
-                                    </foreach>
-                                </when>
-                            </choose>
-                        </foreach>
-                    </trim>
-                </if>
-            </foreach>
-        </where>
-    </sql>
-    <sql id="Update_By_Example_Where_Clause">
-        <where>
-            <foreach collection="example.oredCriteria" item="criteria" separator="or">
-                <if test="criteria.valid">
-                    <trim prefix="(" suffix=")" prefixOverrides="and">
-                        <foreach collection="criteria.criteria" item="criterion">
-                            <choose>
-                                <when test="criterion.noValue">
-                                    and ${criterion.condition}
-                                </when>
-                                <when test="criterion.singleValue">
-                                    and ${criterion.condition} #{criterion.value}
-                                </when>
-                                <when test="criterion.betweenValue">
-                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
-                                </when>
-                                <when test="criterion.listValue">
-                                    and ${criterion.condition}
-                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
-                                             separator=",">
-                                        #{listItem}
-                                    </foreach>
-                                </when>
-                            </choose>
-                        </foreach>
-                    </trim>
-                </if>
-            </foreach>
-        </where>
-    </sql>
     <sql id="Base_Column_List">
         folder_id, user_id, parent_id, folder_name, create_time, modify_time, delete_time
     </sql>
-    <select id="selectByExample" resultMap="BaseResultMap" parameterType="model.UserFolderExample">
-        select
-        <if test="distinct">
-            distinct
-        </if>
-        <include refid="Base_Column_List"/>
-        from user_folder
-        <if test="_parameter != null">
-            <include refid="Example_Where_Clause"/>
-        </if>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
-        </if>
-    </select>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
         <include refid="Base_Column_List"/>
@@ -96,12 +22,6 @@
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         DELETE FROM user_folder
         WHERE folder_id = #{folderId,jdbcType=INTEGER}
-    </delete>
-    <delete id="deleteByExample" parameterType="model.UserFolderExample">
-        delete from user_folder
-        <if test="_parameter != null">
-            <include refid="Example_Where_Clause"/>
-        </if>
     </delete>
     <insert id="insert" parameterType="model.UserFolder" useGeneratedKeys="true" keyProperty="folderId">
         INSERT INTO user_folder (folder_id, user_id, parent_id,
@@ -160,54 +80,6 @@
             </if>
         </trim>
     </insert>
-    <select id="countByExample" parameterType="model.UserFolderExample" resultType="java.lang.Integer">
-        select count(*) from user_folder
-        <if test="_parameter != null">
-            <include refid="Example_Where_Clause"/>
-        </if>
-    </select>
-    <update id="updateByExampleSelective" parameterType="map">
-        update user_folder
-        <set>
-            <if test="record.folderId != null">
-                folder_id = #{record.folderId,jdbcType=INTEGER},
-            </if>
-            <if test="record.userId != null">
-                user_id = #{record.userId,jdbcType=INTEGER},
-            </if>
-            <if test="record.parentId != null">
-                parent_id = #{record.parentId,jdbcType=INTEGER},
-            </if>
-            <if test="record.folderName != null">
-                folder_name = #{record.folderName,jdbcType=VARCHAR},
-            </if>
-            <if test="record.createTime != null">
-                create_time = #{record.createTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="record.modifyTime != null">
-                modify_time = #{record.modifyTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="record.deleteTime != null">
-                delete_time = #{record.deleteTime,jdbcType=TIMESTAMP},
-            </if>
-        </set>
-        <if test="_parameter != null">
-            <include refid="Update_By_Example_Where_Clause"/>
-        </if>
-    </update>
-    <update id="updateByExample" parameterType="map">
-        update user_folder
-        set folder_id = #{record.folderId,jdbcType=INTEGER},
-        user_id = #{record.userId,jdbcType=INTEGER},
-        parent_id = #{record.parentId,jdbcType=INTEGER},
-        folder_name = #{record.folderName,jdbcType=VARCHAR},
-        create_time = #{record.createTime,jdbcType=TIMESTAMP},
-        modify_time = #{record.modifyTime,jdbcType=TIMESTAMP},
-        delete_time = #{record.deleteTime,jdbcType=TIMESTAMP}
-        <if test="_parameter != null">
-            <include refid="Update_By_Example_Where_Clause"/>
-        </if>
-    </update>
     <update id="updateByPrimaryKeySelective" parameterType="model.UserFolder">
         update user_folder
         <set>

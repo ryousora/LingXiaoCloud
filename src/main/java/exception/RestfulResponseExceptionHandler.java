@@ -26,7 +26,7 @@ package exception;//package exception;
 //     */
 //    private ResponseEntity<Object> getResponseEntity(RuntimeException ex, WebRequest request, ReturnStatusCode specificException) {
 //        ReturnTemplate returnTemplate = new ReturnTemplate();
-//        returnTemplate.setStatusCode(specificException);
+//        returnTemplate.setStatus(specificException);
 //        returnTemplate.setErrorMsg(ex.getMessage());
 //
 //        return handleExceptionInternal(ex, returnTemplate,

@@ -1,25 +1,31 @@
 package controller;
 
+import common.ResponseResult;
+import controller.reqbody.UploadReqBody;
 import model.OriginFile;
 import model.UserFile;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import controller.reqbody.UploadReqBody;
+import org.springframework.web.multipart.MultipartFile;
+import service.DiskService;
 import service.DownloadService;
 import service.UploadService;
 import service.UserService;
-import util.validation.ParamChecker;
+import util.file.FileUtil;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping
@@ -32,9 +38,9 @@ public class FileController {
     @Autowired
     private DownloadService downloadService;
     @Autowired
-    private ModelMapper modelMapper;
+    private DiskService diskService;
     @Autowired
-    private ParamChecker paramChecker;
+    private ModelMapper modelMapper;
 
     /**
      * 分块文件的大小，与前端保持一致
@@ -45,23 +51,15 @@ public class FileController {
      * 功能：接收分块上传的文件块
      * 示例：POST users/admin/disk/files
      */
-    @RequestMapping(value = "/users/{username}/disk/files", method = RequestMethod.POST)
-    public Map<String, Object> upload(HttpServletRequest req, @RequestPart("files[]") Part part, @Valid UploadReqBody reqbody) throws IOException {
+    /*@RequestMapping(value = "/users/{username}/disk/files", method = RequestMethod.POST)
+    public Map<String, Object> upload(@PathVariable String username,HttpServletRequest req, @RequestPart Part part, @Valid UploadReqBody reqbody) throws IOException {
         // TODO 参数校验
         System.out.println(req.getHeader("content-range"));
         String contentRange = req.getHeader("content-range");
-        
-        // 检查云盘存储空间是否足够
-        long size;
-        if (contentRange != null) {
-            size = Long.parseLong(contentRange.split("/")[1]);
-        } else {
-            size = part.getSize();
-        }
-        if (!paramChecker.isUserStorageEnough(reqbody.getUserId(), size)) {
-            throw new IllegalArgumentException("Not enough storage to upload this file");
-        }
-        
+
+        if(!userService.getUserByUsername(username).getUserId().equals(reqbody.getUserId()))
+            return null;
+
         // 处理没有Content-Range请求头的小文件
         if (contentRange == null && part.getSize() <= MAX_CHUNK_SIZE) {
             UserFile userFile = modelMapper.map(reqbody, UserFile.class);
@@ -75,7 +73,6 @@ public class FileController {
             OriginFile file = new OriginFile();
             file.setFileMd5(reqbody.getFileMd5());
             file.setFileType(part.getHeader("content-type"));
-            file.setFileSize(size);
             UserFile userFile = modelMapper.map(reqbody, UserFile.class);
             uploadService.savePart(part, reqbody.getFileMd5());
             return uploadService.serveLastPart(userFile, file);
@@ -83,6 +80,44 @@ public class FileController {
             uploadService.savePart(part, reqbody.getFileMd5());
             return null;
         }
+    }*/
+    @RequestMapping(value = "/users/{username}/disk/files", method = RequestMethod.POST)
+    public ResponseResult upload(@PathVariable String username,@RequestParam("file") MultipartFile file,@RequestParam Map<String,String> reqBody) throws Exception {
+        String FILEPATH = "D:/files/";
+
+        Integer userId= Integer.valueOf(reqBody.get("userId").replace("\"", ""));
+        String fileMd5=reqBody.get("fileMd5").replace("\"", "");
+        String fileName=reqBody.get("fileName").replace("\"", "");
+        String fileType=reqBody.get("fileType").replace("\"", "");
+        Integer parentId= Integer.valueOf(reqBody.get("parentId").replace("\"", ""));
+
+        Map<String, Object> data = new HashMap<>();
+        String newFileName="";
+
+        if(!userService.getUserByUsername(username).getUserId().equals(userId))
+            return new ResponseResult(data,200,"身份信息过期！");
+
+        if(file==null)
+            return new ResponseResult(data,200,"上传出错！");
+
+        if(uploadService.isFileMd5Exist(fileMd5)) {
+            data=uploadService.saveFile(new UserFile(userId,parentId,fileName,fileType),diskService.getOriginFileByMd5(fileMd5),newFileName);
+            data.put("url", "files/" + newFileName);
+            return new ResponseResult(data, 201, "服务器已存在资源，秒传成功！");
+        }
+
+        newFileName = fileMd5+"."+fileType;
+        // 新文件
+        File newFile = new File(FILEPATH + newFileName);
+        // 将内存中的文件写入磁盘
+        file.transferTo(newFile);
+
+        System.out.println("md5:                     !!!!!!!!!!!!!!!! " + fileMd5);
+
+        data=uploadService.saveFile(new UserFile(userId,parentId,fileName,fileType),new OriginFile(fileMd5,fileType),newFileName);
+        data.put("url", "files/" + newFileName);
+        return new ResponseResult(data,201,"上传成功");
+
     }
 
     /**
@@ -91,7 +126,7 @@ public class FileController {
      */
     @RequestMapping(value = "/users/{username}/disk/files", method = RequestMethod.DELETE, params = "cancel")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void cancelUpload(@RequestParam String cancel) throws InterruptedException {
+    public void cancelUpload(@RequestParam String cancel, @PathVariable String username) throws InterruptedException {
         // TODO 参数校验
         uploadService.cancel(cancel);
     }
@@ -101,7 +136,7 @@ public class FileController {
      * 示例：GET users/admin/disk/files?resume=abcd，获取md5值为“abcd”的文件的断点
      */
     @RequestMapping(value = "/users/{username}/disk/files", method = RequestMethod.GET, params = "resume")
-    public Long resumeUpload(@RequestParam String resume) {
+    public Long resumeUpload(@RequestParam String resume, @PathVariable String username) {
         // TODO 参数校验
         return uploadService.resume(resume);
     }

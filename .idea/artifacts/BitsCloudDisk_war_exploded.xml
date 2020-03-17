@@ -2,10 +2,10 @@
   <artifact type="exploded-war" name="BitsCloudDisk:war exploded">
     <output-path>$PROJECT_DIR$/out/artifacts/BitsCloudDisk_war_exploded</output-path>
     <root id="root">
-      <element id="javaee-facet-resources" facet="BitsCloudDisk/web/Web" />
+      <element id="javaee-facet-resources" facet="LingXiaoCloud/web/Web" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
-          <element id="module-output" name="BitsCloudDisk" />
+          <element id="module-output" name="LingXiaoCloud" />
         </element>
         <element id="directory" name="lib">
           <element id="library" level="project" name="Maven: org.apache.logging.log4j:log4j-core:2.8.1" />

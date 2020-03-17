@@ -3,9 +3,9 @@ package util.file;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import util.net.UserAgentUtil;
 import util.date.DateUtils;
 import util.math.RandomUtils;
+import util.net.UserAgentUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

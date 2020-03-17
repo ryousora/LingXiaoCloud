@@ -16,10 +16,14 @@ public interface UploadService extends FileService {
      */
     Map<String, Object> serveFirstPart(Part part, String fileMd5, UserFile userFile) throws IOException;
 
+    Boolean isFileMd5Exist(String fileMd5);
+
     /**
      * 保存最后一个文件块，并插入、更新相应的数据
      */
     Map<String, Object> serveLastPart(UserFile userFile, OriginFile originFile) throws IOException;
+
+    Map<String, Object> saveFile(UserFile userFile, OriginFile originFile,String newFileName) throws IOException;
 
     /**
      * 保存文件块到文件系统

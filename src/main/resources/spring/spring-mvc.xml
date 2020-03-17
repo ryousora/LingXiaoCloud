@@ -20,14 +20,16 @@
     <context:component-scan base-package="controller"/>
 
     <!--&lt;!&ndash;对特定的请求进行拦截（Token验证）&ndash;&gt;-->
-    <!--<mvc:interceptors>-->
-    <!--<mvc:interceptor>-->
-    <!--<mvc:mapping path="/**/*"/>-->
-    <!--<mvc:exclude-mapping path="/user/login"/>-->
-    <!--<mvc:exclude-mapping path="/user/register"/>-->
-    <!--<bean class="filter.TokenInterceptor"/>-->
-    <!--</mvc:interceptor>-->
-    <!--</mvc:interceptors>-->
+    <mvc:interceptors>
+            <mvc:interceptor>
+                <mvc:mapping path="/user/*"/>
+                <mvc:exclude-mapping path="/user/checkname"/>
+                <mvc:exclude-mapping path="/user/login"/>
+               <!-- <mvc:exclude-mapping path="/user/check"/>-->
+                <mvc:exclude-mapping path="/user/register"/>
+                <bean class="tokenfilter.TokenInterceptor"/>
+            </mvc:interceptor>
+    </mvc:interceptors>
 
     <!-- 2. 通过 annotation-driven 可以替代处理器映射器和适配器 -->
     <!-- 开启SpringMVC注解模式 -->
@@ -84,6 +86,7 @@
     <mvc:resources mapping="/fonts/**" location="/fonts/"/>
     <mvc:resources mapping="/users/photo/**" location="/users/photo"/>
     <mvc:resources mapping="/images/**" location="file:D://images/"/>
+    <mvc:resources mapping="/files/**" location="file:D://files/"/>
 
     <!-- 3. 配置视图解析器 ViewResolver -->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">

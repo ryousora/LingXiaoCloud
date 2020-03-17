@@ -11,6 +11,7 @@ import sun.misc.BASE64Encoder;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
@@ -19,12 +20,12 @@ import java.util.Date;
  */
 @Component
 public class JwtUtil {
-    private static String sercetKey = "Shawyer";
+    private static String sercetKey = "lingxiao";
     private static Key key = MacProvider.generateKey();
-    private final static long keeptime = 1800000;
+    private final static long keeptime = 30 * 60 * 1000; // 30分钟后过期
 
     public static String generateToken(String username) {
-        long expired = System.currentTimeMillis() + 1000 * 60 * 30; // 30分钟后过期
+        long expired = System.currentTimeMillis() + keeptime;
         String jwt = Jwts.builder()
                 .setSubject(username)
                 .setExpiration(new Date(expired))
@@ -33,9 +34,7 @@ public class JwtUtil {
         return jwt;
     }
 
-
-    public static String generToken(String id, String issuer, String subject) {
-        long ttlMillis = keeptime;
+    private static String generToken(String id, String issuer, String subject) {
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
@@ -51,14 +50,11 @@ public class JwtUtil {
         }
         builder.signWith(signatureAlgorithm, signingKey);
 
-        if (ttlMillis >= 0) {
-            long expMillis = nowMillis + ttlMillis;
-            Date exp = new Date(expMillis);
-            builder.setExpiration(exp);
-        }
+        long expMillis = nowMillis + keeptime;
+        Date exp = new Date(expMillis);
+        builder.setExpiration(exp);
         return builder.compact();
     }
-
     public String updateToken(String token) {
         try {
             Claims claims = verifyToken(token);
@@ -77,7 +73,7 @@ public class JwtUtil {
         BASE64Encoder base64Encoder = new BASE64Encoder();
         BASE64Decoder decoder = new BASE64Decoder();
         try {
-            token = new String(decoder.decodeBuffer(token), "utf-8");
+            token = new String(decoder.decodeBuffer(token), StandardCharsets.UTF_8);
             Claims claims = verifyToken(token);
             String id = claims.getId();
             String subject = claims.getSubject();
@@ -91,11 +87,10 @@ public class JwtUtil {
         return "0";
     }
 
-    public static Claims verifyToken(String token) {
-        Claims claims = Jwts.parser()
+    private static Claims verifyToken(String token) {
+        return Jwts.parser()
                 .setSigningKey(DatatypeConverter.parseBase64Binary(sercetKey))
                 .parseClaimsJws(token).getBody();
-        return claims;
     }
 
     /**

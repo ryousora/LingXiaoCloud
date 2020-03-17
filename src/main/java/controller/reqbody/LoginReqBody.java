@@ -5,11 +5,11 @@ import javax.validation.constraints.Size;
 
 public class LoginReqBody {
     @NotNull
-    @Size(min = 5, max = 16)
+    @Size(min = 1, max = 16)
     private String username;
 
     @NotNull
-    @Size(min = 5, max = 16)
+    @Size(min = 1, max = 16)
     private String password;
 
     public LoginReqBody() {

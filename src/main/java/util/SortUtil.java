@@ -14,12 +14,10 @@ import java.util.Date;
 public class SortUtil {
     public Sortable[] sort(Sortable[] array, int sortType) {
         switch (sortType) {
-            case 0:
-                sortByAlpha(array);
-                break;
             case 1:
                 sortByTime(array);
                 break;
+            case 0: //默认按字母排序
             default:
                 sortByAlpha(array);
         }

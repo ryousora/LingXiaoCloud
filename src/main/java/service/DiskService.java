@@ -1,9 +1,10 @@
 package service;
 
+import model.OriginFile;
+import model.UserFolder;
 import service.dto.UserDTO;
 import service.dto.UserFileDTO;
 import service.dto.UserFolderDTO;
-import model.UserFolder;
 
 import java.util.List;
 import java.util.Map;
@@ -27,4 +28,8 @@ public interface DiskService {
     UserFolderDTO newFolder(UserFolder unsaved);
 
     UserDTO shred(List<Integer> folders, List<Integer> files, Integer userId);
+
+    OriginFile getOriginFileByMd5(String fileMd5);
+
+    boolean isFolderExist(Integer userId,Integer folderId,String FolderName);
 }

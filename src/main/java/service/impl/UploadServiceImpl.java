@@ -4,15 +4,14 @@ import mapper.OriginFileMapper;
 import mapper.UserFileMapper;
 import mapper.UserMapper;
 import model.OriginFile;
-import model.User;
 import model.UserFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import service.UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import service.UploadService;
 import util.object.DTOConvertUtil;
 
 import javax.servlet.http.Part;
@@ -57,7 +56,7 @@ public class UploadServiceImpl implements UploadService {
                  * 如果存在同名文件，且两文件对应的真实文件相同，则返回相应的业务状态码和消息，在客户端执行对应的操作
                  * 如果存在同名文件，但两文件对应的真实文件不同，则为上传文件的文件名添加数字下标，然后继续检查新文件名是否重名，直到不存在重名文件为止
                  */
-                if (duplicate.getFileId() == userFile.getFileId()) {
+                if (duplicate.getFileId().equals(userFile.getFileId())) {
                     result.put("status_code", 111);
                     result.put("msg", "file already exists");
                     return result;
@@ -67,7 +66,7 @@ public class UploadServiceImpl implements UploadService {
                             , userFile.getParentId(), userFile.getFileName(), userFile.getFileType());
                 }
             }
-            // 新建一行UserFile数据，并更新用户使用空间
+            // 新建一行UserFile数据
             userFile.setCreateTime(new Date());
             userFile.setModifyTime(userFile.getCreateTime());
             userFileMapper.insert(userFile);
@@ -76,7 +75,7 @@ public class UploadServiceImpl implements UploadService {
             System.out.println("222");
             result.put("msg", "instant uploading");
             result.put("file", convertor.convertToDTO(userFile, file));
-            result.put("user", convertor.convertToDTO(updateUserCap(userFile.getUserId(), file.getFileSize(), true)));
+            result.put("user", userMapper.selectByPrimaryKey(userFile.getUserId()));
             return result;
         }
         // 服务器不存在该文件，开始文件上传
@@ -85,12 +84,48 @@ public class UploadServiceImpl implements UploadService {
     }
 
     @Override
+    public Boolean isFileMd5Exist(String fileMd5) {
+        return originFileMapper.getByFileMd5(fileMd5)!=null;
+    }
+
+    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public synchronized Map<String, Object> serveLastPart(UserFile userFile, OriginFile file) throws IOException {
+    public synchronized Map<String, Object> saveFile(UserFile userFile, OriginFile file,String newFileName) {
+
+        if(!isFileMd5Exist(file.getFileMd5())) {
+            // 保存新上传文件的信息
+            file.setFileUrl(URL_ROOT + "files/" + newFileName);
+            file.setCreateTime(new Date());
+            originFileMapper.insert(file);
+        }
+/*
+        // 如果存在重名，则为文件名添加数字下标，直到无重名为止
+        while (userFileMapper.getByPath(userFile.getUserId()
+                , userFile.getParentId(), userFile.getFileName(), userFile.getFileType()) != null) {
+            userFile.setFileName(resolveFileNameConflict(userFile.getFileName()));
+        }
+        */
+        // 新建一行UserFile数据
+        userFile.setOriginId(file.getOriginFileId());
+        userFile.setCreateTime(new Date());
+        userFile.setModifyTime(userFile.getCreateTime());
+        userFileMapper.insert(userFile);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("status_code", 333);
+        System.out.println("上传数据录入成功");
+        result.put("msg", "Uploading accomplished");
+        result.put("file", convertor.convertToDTO(userFile, file));
+        result.put("user", userMapper.selectByPrimaryKey(userFile.getUserId()));
+        return result;
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public synchronized Map<String, Object> serveLastPart(UserFile userFile, OriginFile file) {
         // 保存新上传文件的信息
-        file.setFileUrl(URL_ROOT + "images/" + file.getFileMd5());
+        file.setFileUrl(URL_ROOT + "files/" + file.getFileMd5());
         file.setCreateTime(new Date());
-        file.setModifyTime(file.getCreateTime());
         originFileMapper.insert(file);
 
         // 如果存在重名，则为文件名添加数字下标，直到无重名为止
@@ -98,7 +133,7 @@ public class UploadServiceImpl implements UploadService {
                 , userFile.getParentId(), userFile.getFileName(), userFile.getFileType()) != null) {
             userFile.setFileName(resolveFileNameConflict(userFile.getFileName()));
         }
-        // 新建一行UserFile数据，并更新用户使用空间
+        // 新建一行UserFile数据
         userFile.setOriginId(file.getOriginFileId());
         userFile.setCreateTime(new Date());
         userFile.setModifyTime(userFile.getCreateTime());
@@ -109,7 +144,7 @@ public class UploadServiceImpl implements UploadService {
         System.out.println("333");
         result.put("msg", "Uploading accomplished");
         result.put("file", convertor.convertToDTO(userFile, file));
-        result.put("user", convertor.convertToDTO(updateUserCap(userFile.getUserId(), file.getFileSize(), true)));
+        result.put("user", userMapper.selectByPrimaryKey(userFile.getUserId()));
         return result;
     }
 
@@ -141,7 +176,6 @@ public class UploadServiceImpl implements UploadService {
             OriginFile file = new OriginFile();
             file.setFileMd5(fileMd5);
             file.setFileType(part.getHeader("content-type"));
-            file.setFileSize(part.getSize());
             return serveLastPart(userFile, file);
         } else {
             return result;
@@ -190,7 +224,7 @@ public class UploadServiceImpl implements UploadService {
                 int i = Integer.parseInt(end.substring(1, 2));// 括号中间的数字
                 i++;
                 StringBuilder sb = new StringBuilder();
-                sb.append(fileName.substring(0, fileName.length() - 3));
+                sb.append(fileName, 0, fileName.length() - 3);
                 sb.append('(').append(i).append(')');
 
                 return sb.toString();
@@ -199,20 +233,4 @@ public class UploadServiceImpl implements UploadService {
         return fileName + "(1)";
     }
 
-    /**
-     * 更新ID=userId的用户所使用的空间，更新量为size
-     *
-     * @param plus = true 增加使用空间，plus=false减少使用空间
-     * @return 更新后的用户对象
-     */
-    private User updateUserCap(Integer userId, Long size, boolean plus) {
-        User user = userMapper.selectByPrimaryKey(userId);
-        if (plus) {
-            user.setUsedSize(user.getUsedSize() + size);
-        } else {
-            user.setUsedSize(user.getUsedSize() - size);
-        }
-        userMapper.updateByPrimaryKeySelective(user);
-        return user;
-    }
 }

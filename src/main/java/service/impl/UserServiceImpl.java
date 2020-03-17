@@ -1,11 +1,11 @@
 package service.impl;
 
-import service.dto.UserDTO;
 import mapper.UserMapper;
 import model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import service.UserService;
+import service.dto.UserDTO;
 import util.JwtUtil;
 import util.object.DTOConvertUtil;
 
@@ -24,19 +24,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean checkUsername(String username) {
         User user = userMapper.selectByUsername(username);
-        if (user != null) {
-            return true;
-        }
-        return false;
+        return user != null;
     }
 
     @Override
     public boolean checkPassword(String username, String password) {
         User user = userMapper.selectByPassword(username, password);
-        if (user != null) {
-            return true;
-        }
-        return false;
+        return user != null;
     }
 
     @Override

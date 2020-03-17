@@ -1,9 +1,5 @@
 package util.object;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import service.dto.UserFolderDTO;
-import service.dto.UserDTO;
-import service.dto.UserFileDTO;
 import mapper.OriginFileMapper;
 import model.OriginFile;
 import model.User;
@@ -11,8 +7,12 @@ import model.UserFile;
 import model.UserFolder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import service.dto.UserDTO;
+import service.dto.UserFileDTO;
+import service.dto.UserFolderDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,6 @@ public class DTOConvertUtil {
         if (file == null) {
             file = originFileMapper.selectByPrimaryKey(userFile.getOriginId());
         }
-        dto.setFileSize(file.getFileSize());
         dto.setFileUrl(file.getFileUrl());
         return dto;
     }

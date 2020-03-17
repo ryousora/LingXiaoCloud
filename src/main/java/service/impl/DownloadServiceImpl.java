@@ -6,13 +6,13 @@ import mapper.UserFolderMapper;
 import model.OriginFile;
 import model.UserFile;
 import model.UserFolder;
-import service.DownloadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import service.DownloadService;
 
 import java.io.File;
 import java.io.FileInputStream;

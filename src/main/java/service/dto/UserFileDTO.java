@@ -24,11 +24,6 @@ public class UserFileDTO extends Sortable {
     private Date deleteTime;
 
     /**
-     * 文件大小
-     */
-    private Long fileSize;
-
-    /**
      * 文件URL
      */
     private String fileUrl;
@@ -116,14 +111,6 @@ public class UserFileDTO extends Sortable {
         this.deleteTime = deleteTime;
     }
 
-    public Long getFileSize() {
-        return fileSize;
-    }
-
-    public void setFileSize(Long fileSize) {
-        this.fileSize = fileSize;
-    }
-
     public String getFileUrl() {
         return fileUrl;
     }
@@ -145,7 +132,6 @@ public class UserFileDTO extends Sortable {
                 ", createTime=" + createTime +
                 ", modifyTime=" + modifyTime +
                 ", deleteTime=" + deleteTime +
-                ", fileSize=" + fileSize +
                 ", fileUrl='" + fileUrl + '\'' +
                 '}';
     }

@@ -9,7 +9,6 @@ public class Image {
 
     private String url;
 
-    private String description;
 
     public Image() {
     }
@@ -20,12 +19,6 @@ public class Image {
         this.url = url;
     }
 
-    public Image(String name, String md5, String url, String description) {
-        this.name = name;
-        this.md5 = md5;
-        this.url = url;
-        this.description = description;
-    }
 
     public Integer getId() {
         return id;
@@ -59,11 +52,4 @@ public class Image {
         this.url = url == null ? null : url.trim();
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description == null ? null : description.trim();
-    }
 }
