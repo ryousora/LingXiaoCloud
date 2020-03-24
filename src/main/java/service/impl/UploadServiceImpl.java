@@ -94,7 +94,7 @@ public class UploadServiceImpl implements UploadService {
 
         if(!isFileMd5Exist(file.getFileMd5())) {
             // 保存新上传文件的信息
-            file.setFileUrl(URL_ROOT + "files/" + newFileName);
+            file.setFileUrl(/*URL_ROOT + */"files/" + newFileName);
             file.setCreateTime(new Date());
             originFileMapper.insert(file);
         }

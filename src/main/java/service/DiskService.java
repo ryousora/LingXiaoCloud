@@ -25,6 +25,8 @@ public interface DiskService {
 
     UserFileDTO renameFile(Integer fileId, String fileName, String fileType);
 
+    UserFileDTO getFileInfo(Integer fileId);
+
     UserFolderDTO newFolder(UserFolder unsaved);
 
     UserDTO shred(List<Integer> folders, List<Integer> files, Integer userId);

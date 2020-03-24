@@ -192,6 +192,12 @@ public class DiskServiceImpl implements DiskService {
     }
 
     @Override
+    public UserFileDTO getFileInfo(Integer originFileId) {
+        UserFile file = userFileMapper.selectByPrimaryKey(originFileId);
+        return convertor.convertToDTO(file, null);
+    }
+
+    @Override
     public UserFolderDTO newFolder(UserFolder unsaved) {
         unsaved.setCreateTime(new Date());
         unsaved.setModifyTime(unsaved.getCreateTime());

@@ -121,6 +121,14 @@ public class FolderController {
         return diskService.renameFile(fileId, reqBody.getFileName(), reqBody.getFileType());
     }
 
+    @RequestMapping(value = "/user/{username}/disk/files/{fileId}", method = RequestMethod.GET)
+    @ResponseBody
+    public UserFileDTO getFileInfo(@PathVariable String username, @PathVariable int fileId) {
+        // int userId = userService.getUser(username).getId();
+        // TODO 参数校验
+        return diskService.getFileInfo(fileId);
+    }
+
     /**
      * 功能：新建文件夹
      * 示例：POST users/admin/disk/folders，请求体：{"folderName":"新建文件夹","parentId":5}，
